@@ -17,7 +17,7 @@ Frontend development will begin later once backend foundation & workflow are bui
 - Node.js  
 - TypeScript  
 - MySQL  
-- Prisma ORM  
+- sequelize ORM  
 - Express.js
 - Antigravity (AI development support)
 - AI integration (future scope)
