@@ -1,4 +1,6 @@
 import { Job } from "../models/Job";
+import { JobSkill } from "../models/JobSkill";
+import { SourcingKeyword } from "../models/SourcingKeyword";
 
 interface JobInput {
   title: string;
@@ -17,10 +19,14 @@ interface JobInput {
   remoteAvailable?: boolean;
   visaRequired?: boolean;
   educationLevel?: string;
+
+  skills?: { name: string; type: string }[];
+  keywords?: string[];
 }
 
+// CREATE JOB
 export const createJobService = async (data: JobInput) => {
-  return await Job.create({
+  const job = await Job.create({
     title: data.title,
     description: data.description,
     department: data.department,
@@ -38,10 +44,52 @@ export const createJobService = async (data: JobInput) => {
     visaRequired: data.visaRequired,
     educationLevel: data.educationLevel,
   });
+
+  // If skills exist → add
+  if (data.skills && data.skills.length > 0) {
+    await JobSkill.bulkCreate(
+      data.skills.map((s) => ({
+        jobId: job.id,
+        name: s.name,
+        type: s.type,
+      }))
+    );
+  }
+
+  // If keywords exist → add
+  if (data.keywords && data.keywords.length > 0) {
+    await SourcingKeyword.bulkCreate(
+      data.keywords.map((word) => ({
+        jobId: job.id,
+        word,
+      }))
+    );
+  }
+
+  return job;
 };
 
+// GET JOB LIST
 export const getAllJobService = async () => {
   return await Job.findAll({
     order: [["id", "DESC"]],
+    include: [JobSkill, SourcingKeyword],
   });
+};
+
+// DELETE JOB + CHILD DATA
+export const deleteJobService = async (jobId: number) => {
+
+  // remove skills
+  await JobSkill.destroy({ where: { jobId } });
+
+  // remove keywords
+  await SourcingKeyword.destroy({ where: { jobId } });
+
+  // remove job
+  const deleted = await Job.destroy({
+    where: { id: jobId }
+  });
+
+  return deleted;
 };
