@@ -11,7 +11,9 @@
     "express": "^5.2.1",
     "groq-sdk": "^0.37.0",
     "jsonwebtoken": "^9.0.3",
+    "multer": "^2.0.2",
     "mysql2": "^3.16.0",
+    "pdf-parse": "^1.1.1",
     "sequelize": "^6.37.7"
   },
   "devDependencies": {

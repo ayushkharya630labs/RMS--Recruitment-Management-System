@@ -72,7 +72,7 @@ const Sidebar = () => {
         </div>
 
         <NavLink
-          to="/analysis"
+          to="/cv-analysis/upload"
           className={({ isActive }) =>
             `flex items-center gap-3 p-3 rounded-lg text-base transition-all ${
               isActive ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800"
@@ -94,7 +94,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/database"
+          to="/candidates"
           className={({ isActive }) =>
             `flex items-center gap-3 p-3 rounded-lg text-base transition-all ${
               isActive ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800"
