@@ -1,5 +1,5 @@
 interface Props {
-  cv: any;
+  cv: any;   // analysis object
   onClose: () => void;
 }
 
@@ -12,55 +12,38 @@ const ScoreExplanationModal = ({ cv, onClose }: Props) => {
           AI Score Explanation
         </h2>
 
-        <p className="mb-4 text-gray-300">
-          <b>Candidate:</b> {cv.name}
-        </p>
+        <div className="space-y-5 text-gray-300">
 
-        <div className="space-y-5">
+          <p><b>Recommendation:</b> {cv.recommendation}</p>
 
-          {/* SKILL MATCH */}
           <div>
-            <h3 className="text-blue-300 mb-1">Skill Match ({cv.skillMatch}%)</h3>
-            <p className="text-gray-400">
-              Matched Skills:
-              <span className="text-green-400"> {cv.matchedSkills.join(", ")}</span>
+            <h3 className="text-blue-300 mb-1">
+              Skill Match ({cv.skillMatch}%)
+            </h3>
+            <p>
+              <span className="text-green-400">
+                Matched: {cv.matchedSkills?.join(", ") || "—"}
+              </span>
             </p>
-            <p className="text-gray-400">
-              Missing Skills:
-              <span className="text-red-400"> {cv.missingSkills.join(", ")}</span>
+            <p>
+              <span className="text-red-400">
+                Missing: {cv.missingSkills?.join(", ") || "—"}
+              </span>
             </p>
           </div>
 
-          {/* EXPERIENCE */}
           <div>
             <h3 className="text-blue-300 mb-1">
               Experience Match ({cv.experienceMatch}%)
             </h3>
-            <p className="text-gray-400">
-              Experience aligns with job requirement.
-            </p>
           </div>
 
-          {/* OVERALL */}
           <div>
             <h3 className="text-blue-300 mb-1">
               Overall Score ({cv.overallScore}%)
             </h3>
-            <p className="text-gray-400">
-              Score calculated using weighted AI model:
-              <br />
-              Skills (50%), Experience (30%), Education (20%)
-            </p>
+            <p>{cv.explanation || "AI evaluation summary unavailable."}</p>
           </div>
-
-          {/* RECOMMENDATION */}
-          <div>
-            <h3 className="text-blue-300 mb-1">AI Recommendation</h3>
-            <p className="text-white font-semibold">
-              {cv.recommendation} — Suitable for next hiring stage.
-            </p>
-          </div>
-
         </div>
 
         <button

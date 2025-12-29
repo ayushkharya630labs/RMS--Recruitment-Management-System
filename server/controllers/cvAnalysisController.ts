@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import {
   analyzeAndSaveCVService,
   getCVAnalysisByJobService,
-   getAllCandidatesService,
+  getAllCandidatesService,
   deleteCandidateService,
 } from "../services/cvAnalysisService";
 
@@ -11,20 +11,11 @@ import pdfParse from "pdf-parse";
 export const getAllCandidates = async (req: Request, res: Response) => {
   try {
     const candidates = await getAllCandidatesService();
-
-    return res.json({
-      success: true,
-      data: candidates,
-    });
-
+    return res.json({ success: true, data: candidates });
   } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
-
 
 /**
  * Analyze CV + Save AI result
@@ -34,47 +25,34 @@ export const analyzeCV = async (req: Request, res: Response) => {
     const jobId = Number(req.body.jobId);
     const files = req.files as Express.Multer.File[];
 
-    if (!jobId) {
+    if (!jobId)
       return res
         .status(400)
-        .json({ success: false, message: "jobId is required" });
-    }
+        .json({ success: false, message: "jobId required" });
 
-    if (!files?.length) {
+    if (!files?.length)
       return res
         .status(400)
         .json({ success: false, message: "No CV files uploaded" });
-    }
 
     const results: any[] = [];
 
     for (const file of files) {
-      // 👇 pdf-parse now works as a function
       const parsed = await pdfParse(file.buffer);
-      const cvText = parsed.text ?? "";
+      const cvText = parsed.text || "";
 
       const result = await analyzeAndSaveCVService({
         jobId,
         cvText,
-        candidate: {
-          name: file.originalname.replace(/\..*/, ""),
-          skills: [],
-        },
       });
 
       results.push(result);
     }
 
-    return res.status(201).json({
-      success: true,
-      data: results,
-    });
+    return res.status(201).json({ success: true, data: results });
   } catch (err: any) {
     console.error("CV Analyze Error:", err);
-    return res.status(500).json({
-      success: false,
-      message: err.message || "CV analysis failed",
-    });
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -84,18 +62,11 @@ export const analyzeCV = async (req: Request, res: Response) => {
 export const getCVAnalysisByJob = async (req: Request, res: Response) => {
   try {
     const jobId = Number(req.params.jobId);
-
     const cvs = await getCVAnalysisByJobService(jobId);
 
-    return res.json({
-      success: true,
-      data: cvs,
-    });
+    return res.json({ success: true, data: cvs });
   } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -104,22 +75,22 @@ export const deleteCandidate = async (req: Request, res: Response) => {
     const candidateId = Number(req.params.id);
 
     if (!candidateId)
-      return res.status(400).json({ success: false, message: "Candidate id required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Candidate id required" });
 
     const deleted = await deleteCandidateService(candidateId);
 
     if (!deleted)
-      return res.status(404).json({ success: false, message: "Candidate not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Candidate not found" });
 
     return res.json({
       success: true,
       message: "Candidate & related CV analysis deleted successfully",
     });
-
   } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
