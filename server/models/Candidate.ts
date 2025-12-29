@@ -1,4 +1,3 @@
-// models/Candidate.ts
 import { DataTypes, Model } from "sequelize";
 import { sequelize } from "../config/database";
 
@@ -6,51 +5,29 @@ export class Candidate extends Model {}
 
 Candidate.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
 
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+    name: { type: DataTypes.STRING, allowNull: false },
 
-    email: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    email: { type: DataTypes.STRING },
+    phone: { type: DataTypes.STRING },
+    location: { type: DataTypes.STRING },
 
-    phone: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    // Always numeric or NULL
+    totalExperience: { type: DataTypes.FLOAT, allowNull: true },
 
-    location: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    currentRole: { type: DataTypes.STRING },
 
-    education: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    skills: { type: DataTypes.JSON },
 
-    experienceYears: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    summary: { type: DataTypes.TEXT },
+    experience: { type: DataTypes.JSON },
+    education: { type: DataTypes.JSON },
+    certifications: { type: DataTypes.JSON },
+    projects: { type: DataTypes.JSON },
+    achievements: { type: DataTypes.JSON },
 
-    skills: {
-      type: DataTypes.JSON, 
-      allowNull: true,
-    },
-
-    resumePath: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    rawText: { type: DataTypes.TEXT },
   },
   {
     sequelize,

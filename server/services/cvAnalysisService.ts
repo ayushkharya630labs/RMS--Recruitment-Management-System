@@ -2,7 +2,7 @@ import { Job } from "../models/Job";
 import { Candidate } from "../models/Candidate";
 import { CvAnalysis } from "../models/CvAnalysis";
 import { scoreCV_AI } from "./cvScoringAI";
-
+import { parseCV_AI } from "./cvParserAI";
 
 /**
  * Get All Candidates
@@ -14,54 +14,59 @@ export const getAllCandidatesService = async () => {
   });
 };
 
-export const analyzeAndSaveCVService = async (payload: {
+// 🔹 normalize exp before saving
+const normalizeExperience = (val: any) => {
+  if (!val) return null;
+  const num = parseFloat(String(val).match(/[\d\.]+/)?.[0]);
+  return isNaN(num) ? null : num;
+};
+
+export const analyzeAndSaveCVService = async ({
+  jobId,
+  cvText,
+}: {
   jobId: number;
   cvText: string;
-  candidate: {
-    name: string;
-    location?: string;
-    education?: string;
-    experienceYears?: number;
-    skills?: string[];
-  };
 }) => {
-  // 1️⃣ Fetch Job
-  const job = await Job.findByPk(payload.jobId);
+  const job = await Job.findByPk(jobId);
   if (!job) throw new Error("Job not found");
 
-  // 2️⃣ AI SCORING
-  const aiResult = await scoreCV_AI(
-    job.description,
-    payload.cvText
-  );
+  // 1️⃣ AI Parse CV → structured JSON
+  const parsed = await parseCV_AI(cvText);
 
-  // 3️⃣ Save Candidate
+  // 2️⃣ Save Candidate
   const candidate = await Candidate.create({
-    name: payload.candidate.name,
-    location: payload.candidate.location,
-    education: payload.candidate.education,
-    experienceYears: payload.candidate.experienceYears,
-    skills: payload.candidate.skills,
+    name: parsed.name || "Unknown",
+    email: parsed.email || null,
+    phone: parsed.phone || null,
+    location: parsed.location || null,
+
+    totalExperience: normalizeExperience(parsed.totalExperience),
+    currentRole: parsed.currentRole || null,
+
+    skills: parsed.skills || [],
+
+    summary: parsed.summary || null,
+    experience: parsed.experience || [],
+    education: parsed.education || [],
+    certifications: parsed.certifications || [],
+    projects: parsed.projects || [],
+    achievements: parsed.achievements || [],
+
+    rawText: cvText,
   });
 
-  // 4️⃣ Save Analysis
+  // 3️⃣ AI Score (Job Match)
+  const score = await scoreCV_AI(job.description, cvText);
+
   const analysis = await CvAnalysis.create({
-    jobId: payload.jobId,
+    jobId,
     candidateId: candidate.id,
-
-    skillMatch: aiResult.skillMatch,
-    experienceMatch: aiResult.experienceMatch,
-    overallScore: aiResult.overallScore,
-    recommendation: aiResult.recommendation,
-
-    matchedSkills: aiResult.matchedSkills,
-    missingSkills: aiResult.missingSkills,
-    aiExplanation: aiResult.explanation,
+    ...score,
   });
 
   return { candidate, analysis };
 };
-
 
 /**
  * Get analyzed CVs for a job
@@ -75,11 +80,6 @@ export const getCVAnalysisByJobService = async (jobId: number) => {
 };
 
 export const deleteCandidateService = async (candidateId: number) => {
-  // delete mappings first
   await CvAnalysis.destroy({ where: { candidateId } });
-
-  // delete candidate
-  const deleted = await Candidate.destroy({ where: { id: candidateId } });
-
-  return deleted;
+  return await Candidate.destroy({ where: { id: candidateId } });
 };
