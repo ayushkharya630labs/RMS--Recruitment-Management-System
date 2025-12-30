@@ -83,7 +83,7 @@ const Sidebar = () => {
         </NavLink>
 
         <NavLink
-          to="/submission"
+          to="/submission/branding"
           className={({ isActive }) =>
             `flex items-center gap-3 p-3 rounded-lg text-base transition-all ${
               isActive ? "bg-blue-600 text-white" : "text-gray-300 hover:bg-gray-800"

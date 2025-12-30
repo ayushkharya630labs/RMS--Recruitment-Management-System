@@ -14,6 +14,7 @@ import "./models/SourcingKeyword";
 import jobRoutes from "./routes/jobRoutes";
 import jdParserRoutes from "./routes/jdParserRoutes";
 import cvAnalysisRoutes from "./routes/cvAnalysisRoutes";
+import submissionRoutes from "./routes/submissionRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 
 const app = express();
@@ -30,6 +31,7 @@ app.use(
 app.use("/api/jobs", jobRoutes);
 app.use("/api/jd", jdParserRoutes);
 app.use("/api/cv", cvAnalysisRoutes);
+app.use("/api/submissions", submissionRoutes);
 
 app.use(errorHandler);
 

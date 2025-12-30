@@ -8,6 +8,9 @@ import JobParsedSummary from "./pages/JobCreation/JobParsedSummary";
 import CvUpload from "./pages/CvAnalysis/CvUpload";
 import CvParsedResult from "./pages/CvAnalysis/CvParsedResult";
 import CandidateList from "./pages/CandidateDatabase/CandidateList";
+import Branding from "./pages/CandidateSubmission/Branding";
+import ExcelConsolidation from "./pages/CandidateSubmission/ExcelConsolidation";
+import EmailDraft from "./pages/CandidateSubmission/EmailDraft";
 
 function App() {
   return (
@@ -22,6 +25,11 @@ function App() {
               <Route path="cv-analysis/upload" element={<CvUpload />} />
           <Route path="cv-analysis/parsed" element={<CvParsedResult />} />
           <Route path="/candidates" element={<CandidateList />} />
+          <Route path="/submission/branding" element={<Branding />} />
+<Route path="/submission/excel" element={<ExcelConsolidation />} />
+<Route path="/submission/email" element={<EmailDraft />} />
+
+
         </Route>
 
       </Routes>
