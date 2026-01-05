@@ -12,8 +12,10 @@ import {
 } from "react-icons/fa";
 import ScoreExplanationModal from "./modals/ScoreExplanationModal";
 import CvProfileModal from "./modals/CvProfileModal";
+import { useNavigate } from "react-router-dom";
 
 const CvParsedResult = () => {
+    const navigate = useNavigate();
   const [rows, setRows] = useState<any[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
   const [scoreModal, setScoreModal] = useState<any>(null);
@@ -46,6 +48,20 @@ const CvParsedResult = () => {
       prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]
     );
   };
+
+  const handleProceed = () => {
+  if (selected.length === 0) return alert("Select at least one candidate");
+
+  const payload = {
+    jobId: rows?.[0]?.analysis?.jobId || null, // fallback if missing
+    candidates: selected.map(id => ({ candidateId: id })),
+    candidateDetails: rows.filter(r => selected.includes(r.id)),
+  };
+
+  sessionStorage.setItem("submissionPayload", JSON.stringify(payload));
+
+  navigate("/submission/branding");
+};
 
   return (
     <div className="text-white">
@@ -174,17 +190,21 @@ const CvParsedResult = () => {
       })}
 
       {/* SUBMIT BUTTON */}
-      <button
-        disabled={selected.length === 0}
-        className={`
-          mt-10 px-10 py-4 rounded-xl text-xl font-semibold
-          flex items-center gap-3 transition
-          ${selected.length === 0 ? "bg-gray-700 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-500"}
-        `}
-      >
-        <FaCheckCircle />
-        Proceed to Submission ({selected.length})
-      </button>
+    <button
+  disabled={selected.length === 0}
+  onClick={handleProceed}
+  className={`
+    mt-10 px-10 py-4 rounded-xl text-xl font-semibold
+    flex items-center gap-3 transition
+    ${selected.length === 0
+      ? "bg-gray-700 cursor-not-allowed"
+      : "bg-blue-600 hover:bg-blue-500"}
+  `}
+>
+  <FaCheckCircle />
+  Proceed to Submission ({selected.length})
+</button>
+
 
       {/* MODALS */}
       {scoreModal && (
