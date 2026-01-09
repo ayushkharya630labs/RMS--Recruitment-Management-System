@@ -1,7 +1,6 @@
 import axios from "axios";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
-// http://localhost:5000/api
 
 // ---------- TYPES ---------- //
 
@@ -21,16 +20,24 @@ export interface AIParseResponse {
 export interface CreateJobPayload {
   title: string;
   description: string;
+  companyName: string;
+  hiringManagerName?: string;
+  hiringManagerEmail?: string;
+  jdSource?: string;
+  priority?: string;
+
   department?: string;
   location?: string;
   country?: string;
   city?: string;
   jobType?: string;
+
   experienceMin?: number;
   experienceMax?: number;
   salaryMin?: number;
   salaryMax?: number;
   currency?: string;
+
   skillsRequired?: string;
   remoteAvailable?: boolean;
   visaRequired?: boolean;
@@ -42,15 +49,38 @@ export interface CreateJobPayload {
 
 // ---------- APIs ---------- //
 
-// 1️⃣ Parse JD using AI
+// 1️⃣ Parse JD using AI (Safe)
 export const parseJD = async (text: string): Promise<AIParseResponse> => {
-  const res = await axios.post(`${BASE_URL}/jd/parse`, { text });
-  return res.data.data;
+  try {
+    const res = await axios.post(`${BASE_URL}/jd/parse`, { text });
+
+    if (!res.data?.success) {
+      throw new Error(res.data?.message || "AI parsing failed");
+    }
+
+    const parsed = res.data?.data;
+
+    if (!parsed || typeof parsed !== "object") {
+      throw new Error("Invalid AI response");
+    }
+
+    return parsed as AIParseResponse;
+  } catch (err: any) {
+    console.error("❌ JD Parse Error:", err?.response?.data || err);
+    throw new Error(
+      err?.response?.data?.message || "Unable to parse JD. Try again."
+    );
+  }
 };
 
 // 2️⃣ Create Job
 export const createJob = async (payload: CreateJobPayload) => {
   const res = await axios.post(`${BASE_URL}/jobs/create`, payload);
+
+  if (!res.data?.success) {
+    throw new Error(res.data?.message || "Job creation failed");
+  }
+
   return res.data.data;
 };
 

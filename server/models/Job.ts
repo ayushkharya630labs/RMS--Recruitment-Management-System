@@ -5,100 +5,58 @@ export class Job extends Model {}
 
 Job.init(
   {
-    id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
-    },
+    id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
 
-    title: {
+    // 🔹 Client / Company Details
+    companyName: {
       type: DataTypes.STRING,
       allowNull: false,
     },
 
-    description: {
-      type: DataTypes.TEXT,
-      allowNull: false,
-    },
-
-    department: {
+    hiringManagerName: {
       type: DataTypes.STRING,
       allowNull: true,
     },
 
-    location: {
+    hiringManagerEmail: {
       type: DataTypes.STRING,
       allowNull: true,
     },
 
-    country: {
-      type: DataTypes.STRING,
+    jdSource: {
+      type: DataTypes.STRING, // email | whatsapp | portal | referral
       allowNull: true,
     },
 
-    city: {
-      type: DataTypes.STRING,
-      allowNull: true,
+    priority: {
+      type: DataTypes.STRING, // high | medium | low
+      defaultValue: "medium",
     },
 
-    jobType: {
-      type: DataTypes.STRING,       // full-time, part-time, contract
-      allowNull: true,
-    },
+    // 🔹 Core Job Fields
+    title: { type: DataTypes.STRING, allowNull: false },
+    description: { type: DataTypes.TEXT, allowNull: false },
 
-    experienceMin: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    department: DataTypes.STRING,
+    location: DataTypes.STRING,
+    country: DataTypes.STRING,
+    city: DataTypes.STRING,
 
-    experienceMax: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    jobType: DataTypes.STRING, // full-time | contract
 
-    salaryMin: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    experienceMin: DataTypes.INTEGER,
+    experienceMax: DataTypes.INTEGER,
 
-    salaryMax: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-    },
+    salaryMin: DataTypes.INTEGER,
+    salaryMax: DataTypes.INTEGER,
+    currency: DataTypes.STRING,
 
-    currency: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
+    skillsRequired: DataTypes.TEXT, // comma list
+    remoteAvailable: { type: DataTypes.BOOLEAN, defaultValue: false },
+    visaRequired: { type: DataTypes.BOOLEAN, defaultValue: false },
+    educationLevel: DataTypes.STRING,
 
-    skillsRequired: {
-      type: DataTypes.TEXT, // comma separated list
-      allowNull: true,
-    },
-
-    remoteAvailable: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-
-    visaRequired: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-    },
-
-    educationLevel: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    },
-
-    status: {
-      type: DataTypes.STRING,
-      defaultValue: "active",
-    },
+    status: { type: DataTypes.STRING, defaultValue: "active" },
   },
-  {
-    sequelize,
-    tableName: "jobs",
-    timestamps: true,
-  }
+  { sequelize, tableName: "jobs", timestamps: true }
 );

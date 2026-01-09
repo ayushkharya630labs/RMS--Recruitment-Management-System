@@ -3,6 +3,12 @@ import { JobSkill } from "../models/JobSkill";
 import { SourcingKeyword } from "../models/SourcingKeyword";
 
 interface JobInput {
+  companyName?: string;
+  hiringManagerName?: string;
+  hiringManagerEmail?: string;
+  jdSource?: string;
+  priority?: string;
+
   title: string;
   description: string;
   department?: string;
@@ -24,9 +30,14 @@ interface JobInput {
   keywords?: string[];
 }
 
-// CREATE JOB
 export const createJobService = async (data: JobInput) => {
   const job = await Job.create({
+    companyName: data.companyName || "Unknown Client",
+    hiringManagerName: data.hiringManagerName || null,
+    hiringManagerEmail: data.hiringManagerEmail || null,
+    jdSource: data.jdSource || "email",
+    priority: data.priority || "medium",
+
     title: data.title,
     description: data.description,
     department: data.department,
@@ -40,15 +51,14 @@ export const createJobService = async (data: JobInput) => {
     salaryMax: data.salaryMax,
     currency: data.currency,
     skillsRequired: data.skillsRequired,
-    remoteAvailable: data.remoteAvailable,
-    visaRequired: data.visaRequired,
+    remoteAvailable: data.remoteAvailable ?? false,
+    visaRequired: data.visaRequired ?? false,
     educationLevel: data.educationLevel,
   });
 
-  // If skills exist → add
-  if (data.skills && data.skills.length > 0) {
+  if (data.skills?.length) {
     await JobSkill.bulkCreate(
-      data.skills.map((s) => ({
+      data.skills.map(s => ({
         jobId: job.id,
         name: s.name,
         type: s.type,
@@ -56,10 +66,9 @@ export const createJobService = async (data: JobInput) => {
     );
   }
 
-  // If keywords exist → add
-  if (data.keywords && data.keywords.length > 0) {
+  if (data.keywords?.length) {
     await SourcingKeyword.bulkCreate(
-      data.keywords.map((word) => ({
+      data.keywords.map(word => ({
         jobId: job.id,
         word,
       }))
